@@ -15,7 +15,8 @@
             width: 126px;
         }
     </style>
-    <script src="https://www.google.com/recaptcha/api.js?render=6Lc1hhUaAAAAAF-ixVcjtgb8HHQ_PKEG1Lhwo6Oi"></script>
+
+
     <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
     <script type="text/javascript">
         function CheckEmailFeedback() {
