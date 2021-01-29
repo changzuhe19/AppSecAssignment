@@ -144,7 +144,7 @@
         function DateFeedback() {
             var current = new Date();
             var expiry = document.getElementById('<%=tb_expiry.ClientID%>').value;
-            if (expiry.search(/^(0[1-9]|1[0-2])\/?([0-9]{4}|[0-9]{2})$/) == -1) {
+            if (expiry.search(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/) == -1) {
                 document.getElementById('<%=lbl_expiryfeedback.ClientID%>').innerHTML = "Expiry Date Not In Correct Format: MM/YY";
                 document.getElementById('<%=lbl_expiryfeedback.ClientID%>').style.color = "Red";
                 return ("invalid_date");

@@ -49,72 +49,75 @@ namespace _190298T_IT2163ASSIGNMENT
         protected void check_email_Click(object sender, EventArgs e)
         {
             string check_emailtext = tb_check_email.Text.Trim();
-            try
-            {
-                using (SqlConnection con = new SqlConnection(IT2163DB))
+            if (Regex.IsMatch(check_emailtext, @"^\w+[\+\.\w-]*@([\w-]+\.)*\w+[\w-]*\.([a-z]{2,4}|\d+)$")) {
+                try
                 {
-                    using (SqlCommand cmd = new SqlCommand("SELECT Count(*) FROM SITConnect WHERE Email_Address = @Email_Address"))
+                    using (SqlConnection con = new SqlConnection(IT2163DB))
                     {
-                        using (SqlDataAdapter sda = new SqlDataAdapter())
+                        using (SqlCommand cmd = new SqlCommand("SELECT Count(*) FROM SITConnect WHERE Email_Address = @Email_Address"))
                         {
-                            cmd.CommandType = CommandType.Text;
-                            cmd.Parameters.AddWithValue("@Email_Address", check_emailtext);
-                            cmd.Connection = con;
-                            try
+                            using (SqlDataAdapter sda = new SqlDataAdapter())
                             {
-                                con.Open();
-                                int result = Convert.ToInt32(cmd.ExecuteScalar());
-                                DateTime Min = GetMin_Pwd(check_emailtext);
-                                if (result == 1)
+                                cmd.CommandType = CommandType.Text;
+                                cmd.Parameters.AddWithValue("@Email_Address", check_emailtext);
+                                cmd.Connection = con;
+                                try
                                 {
-                                    if (DateTime.Now > Min)
+                                    con.Open();
+                                    int result = Convert.ToInt32(cmd.ExecuteScalar());
+                                    DateTime Min = GetMin_Pwd(check_emailtext);
+                                    if (result == 1)
                                     {
-                                        tb_email.Text = check_emailtext;
-                                        check_email_failure.Visible = false;
-                                        lbl_check_email.Visible = false;
-                                        tb_check_email.Visible = false;
-                                        lbl_checkemailfeedback.Visible = false;
-                                        check_email.Visible = false;
-                                        lbl_email.Visible = true;
-                                        tb_email.Visible = true;
-                                        tb_newpwd.Visible = true;
-                                        lbl_newpwd.Visible = true;
-                                        lbl_newpwdfeedback.Visible = true;
-                                        lbl_cfmpwd.Visible = true;
-                                        tb_cfmpwd.Visible = true;
-                                        lbl_cfmpwdfeedback.Visible = true;
-                                        btn_changepwd.Visible = true;
-                                        Min_Reset_Failure.Visible = false;
+                                        if (DateTime.Now > Min)
+                                        {
+                                            tb_email.Text = check_emailtext;
+                                            check_email_failure.Visible = false;
+                                            lbl_check_email.Visible = false;
+                                            tb_check_email.Visible = false;
+                                            lbl_checkemailfeedback.Visible = false;
+                                            check_email.Visible = false;
+                                            lbl_email.Visible = true;
+                                            tb_email.Visible = true;
+                                            tb_newpwd.Visible = true;
+                                            lbl_newpwd.Visible = true;
+                                            lbl_newpwdfeedback.Visible = true;
+                                            lbl_cfmpwd.Visible = true;
+                                            tb_cfmpwd.Visible = true;
+                                            lbl_cfmpwdfeedback.Visible = true;
+                                            btn_changepwd.Visible = true;
+                                            Min_Reset_Failure.Visible = false;
+                                        }
+                                        else
+                                        {
+                                            check_email_failure.Visible = false;
+                                            Min_Reset_Failure.Visible = true;
+                                        }
                                     }
                                     else
                                     {
-                                        check_email_failure.Visible = false;
-                                        Min_Reset_Failure.Visible = true;
+                                        Min_Reset_Failure.Visible = false;
+                                        check_email_failure.Visible = true;
                                     }
                                 }
-                                else
+                                catch (Exception ex)
                                 {
-                                    Min_Reset_Failure.Visible = false;
-                                    check_email_failure.Visible = true;
+                                    Response.Redirect("/Error/GenericError.htmL", false);
                                 }
+                                finally
+                                {
+                                    con.Close();
+                                }
+
                             }
-                            catch (Exception ex)
-                            {
-                                Response.Redirect("/Error/GenericError.htmL", false);
-                            }
-                            finally
-                            {
-                                con.Close();
-                            }
-                            
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    Response.Redirect("/Error/GenericError.htmL", false);
+                }
             }
-            catch (Exception ex)
-            {
-                Response.Redirect("/Error/GenericError.htmL", false);
-            }
+            
         }
 
         protected void btn_changepwd_Click(object sender, EventArgs e)

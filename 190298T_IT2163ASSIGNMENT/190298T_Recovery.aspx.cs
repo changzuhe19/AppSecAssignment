@@ -122,6 +122,41 @@ namespace _190298T_IT2163ASSIGNMENT
                 lbl_ccfeedback.ForeColor = Color.Red;
             }
 
+            lbl_expiryfeedback.Text = "";
+            if (Regex.IsMatch(tb_expiry.Text, @"^(0[1-9]|1[0-2])\/?([0-9]{2})$"))
+            {
+                DateTime current = DateTime.Now;
+                int month = Convert.ToInt32(tb_expiry.Text.Substring(0, 2));
+                int year = Convert.ToInt32(tb_expiry.Text.Substring(3, 2));
+                if (year < current.Year % 100)
+                {
+                    System.Diagnostics.Debug.WriteLine(year);
+                    System.Diagnostics.Debug.WriteLine(current.Year);
+                    error += 1;
+                    lbl_expiryfeedback.Text = "Credit Card Has Expired";
+                    lbl_expiryfeedback.ForeColor = Color.Red;
+                }
+                else
+                {
+                    if (month < current.Month)
+                    {
+                        error += 1;
+                        lbl_expiryfeedback.Text = "Credit Card Has Expired";
+                        lbl_expiryfeedback.ForeColor = Color.Red;
+                    }
+                    else
+                    {
+                        lbl_expiryfeedback.Text = "";
+                    }
+                }
+            }
+            else
+            {
+                error += 1;
+                lbl_expiryfeedback.Text = "Expiry Date Not In Correct Format: MM/YY";
+                lbl_expiryfeedback.ForeColor = Color.Red;
+            }
+
             if (tb_lastname.Text != RetrieveLName() || tb_cc.Text != decryptCC() || tb_expiry.Text != RetrieveExpiry())
             {
                 Verify_Failure.Visible = true;

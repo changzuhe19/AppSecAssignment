@@ -209,40 +209,81 @@ namespace _190298T_IT2163ASSIGNMENT
                 lbl_cvvfeedback.ForeColor = Color.Red;
             }
 
-
-
-
-            lbl_emailfeedback.Text = " ";
-            SqlConnection conn = new SqlConnection(IT2163DB);
-            string sql = "SELECT * FROM SITConnect WHERE Email_Address = @email";
-            DataTable dt = new DataTable();
-            try
+            lbl_expiryfeedback.Text = "";
+            if (Regex.IsMatch(tb_expiry.Text, @"^(0[1-9]|1[0-2])\/?([0-9]{2})$"))
             {
-                conn.Open();
-                SqlCommand cmd = new SqlCommand(sql, conn);
-                cmd.Parameters.AddWithValue("@email", tb_email.Text.Trim());
-                SqlDataAdapter ad = new SqlDataAdapter(cmd);
-                
-                ad.Fill(dt);
-                if (dt.Rows.Count > 0)
+                DateTime current = DateTime.Now;
+                int month = Convert.ToInt32(tb_expiry.Text.Substring(0, 2));
+                int year = Convert.ToInt32(tb_expiry.Text.Substring(3, 2));
+                if (year < current.Year%100)
                 {
-                    error += 1;
-                    lbl_emailfeedback.Text += "Please try again with another email";
-                    lbl_emailfeedback.ForeColor = Color.Red;
+                    System.Diagnostics.Debug.WriteLine(year);
+                    System.Diagnostics.Debug.WriteLine(current.Year);
+                       error += 1;
+                    lbl_expiryfeedback.Text = "Credit Card Has Expired";
+                    lbl_expiryfeedback.ForeColor = Color.Red;
                 }
                 else
                 {
-                    lbl_emailfeedback.Text += " ";
+                    if (month < current.Month)
+                    {
+                        error += 1;
+                        lbl_expiryfeedback.Text = "Credit Card Has Expired";
+                        lbl_expiryfeedback.ForeColor = Color.Red;
+                    }
+                    else
+                    {
+                        lbl_expiryfeedback.Text = "";
+                    }
                 }
             }
-            catch (Exception ex)
+            else
             {
-                Response.Redirect("/Error/GenericError.htmL", false);
+                error += 1;
+                lbl_expiryfeedback.Text = "Expiry Date Not In Correct Format: MM/YY";
+                lbl_expiryfeedback.ForeColor = Color.Red;
             }
-            finally
+
+            lbl_emailfeedback.Text = " ";
+            if (Regex.IsMatch(tb_email.Text, @"^\w+[\+\.\w-]*@([\w-]+\.)*\w+[\w-]*\.([a-z]{2,4}|\d+)$")){
+                SqlConnection conn = new SqlConnection(IT2163DB);
+                string sql = "SELECT * FROM SITConnect WHERE Email_Address = @email";
+                DataTable dt = new DataTable();
+                try
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand(sql, conn);
+                    cmd.Parameters.AddWithValue("@email", tb_email.Text.Trim());
+                    SqlDataAdapter ad = new SqlDataAdapter(cmd);
+
+                    ad.Fill(dt);
+                    if (dt.Rows.Count > 0)
+                    {
+                        error += 1;
+                        lbl_emailfeedback.Text += "Please try again with another email";
+                        lbl_emailfeedback.ForeColor = Color.Red;
+                    }
+                    else
+                    {
+                        lbl_emailfeedback.Text += " ";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Response.Redirect("/Error/GenericError.htmL", false);
+                }
+                finally
+                {
+                    conn.Close();
+                }
+            }
+            else
             {
-                conn.Close();
+                error += 1;
+                lbl_emailfeedback.Text = "Email is invalid";
+                lbl_emailfeedback.ForeColor = Color.Red;
             }
+            
 
             lbl_pwdfeedback.Text = "";
             if (tb_pwd.Text.Length < 10)
@@ -296,6 +337,56 @@ namespace _190298T_IT2163ASSIGNMENT
                 lbl_pwdfeedback.ForeColor = Color.Red;
             }
 
+            lbl_dobfeedback.Text = "";
+            if (Regex.IsMatch(tb_dob.Text, @"^([0-2][0-9]|(3)[0-1])(\/)(((0)[0-9])|((1)[0-2]))(\/)\d{4}$"))
+            {
+                DateTime current = DateTime.Now;
+                int day = Convert.ToInt32(tb_dob.Text.Substring(0,2));
+                int month = Convert.ToInt32(tb_dob.Text.Substring(3, 2));
+                int year = Convert.ToInt32(tb_dob.Text.Substring(6, 4));
+                if (year > current.Year)
+                {
+                    error += 1;
+                    lbl_dobfeedback.Text = "Invalid Date Of Birth";
+                    lbl_dobfeedback.ForeColor = Color.Red;
+                }
+                else if (year == current.Year)
+                {
+                    if (month > current.Month)
+                    {
+                        error += 1;
+                        lbl_dobfeedback.Text = "Invalid Date Of Birth";
+                        lbl_dobfeedback.ForeColor = Color.Red;
+                    }
+                    else if (month == current.Month)
+                    {
+                        if (day > current.Day)
+                        {
+                            error += 1;
+                            lbl_dobfeedback.Text = "Invalid Date Of Birth";
+                            lbl_dobfeedback.ForeColor = Color.Red;
+                        }
+                        else
+                        {
+                            lbl_dobfeedback.Text = "";
+                        }
+                    }
+                    else
+                    {
+                        lbl_dobfeedback.Text = "";
+                    }
+                }
+                else
+                {
+                    lbl_dobfeedback.Text = "";
+                }
+            }
+            else
+            {
+                error += 1;
+                lbl_dobfeedback.Text = "Date Of Birth Not In Correct Format: DD/MM/YYYY";
+                lbl_dobfeedback.ForeColor = Color.Red;
+            }
 
 
             if (error == 0)
