@@ -13,5 +13,13 @@ namespace _190298T_IT2163ASSIGNMENT
         {
 
         }
+
+        protected void submit_Click(object sender, EventArgs e)
+        {
+            string name = tb_name.Text.ToString();
+            string qty = tb_quantity.Text.ToString();
+
+            result.Text += "<br /><br />" + "Name: " + HttpUtility.HtmlEncode(name) + "<br />" + "Quantity: " + HttpUtility.HtmlEncode(qty);
+        }
     }
 }

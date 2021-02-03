@@ -61,11 +61,4 @@
             </td>
         </tr>
     </table>
-    <script>
-        grecaptcha.ready(function () {
-            grecaptcha.execute('6Lc1hhUaAAAAAF-ixVcjtgb8HHQ_PKEG1Lhwo6Oi', { action: 'Login' }).then(function (token) {
-                document.getElementById("g-recaptcha-response").value = token;
-            });
-        });
-    </script>
 </asp:Content>

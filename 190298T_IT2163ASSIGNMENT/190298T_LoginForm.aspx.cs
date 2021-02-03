@@ -10,15 +10,54 @@ using System.Text;
 using System.Data;
 using System.Data.SqlClient;
 using System.Configuration;
+using System.Web.Script.Serialization;
+using System.IO;
+using System.Net;
 
 namespace _190298T_IT2163ASSIGNMENT
 {
     public partial class _190298T_LoginForm : System.Web.UI.Page
     {
+        public class MyObjectLogin
+        {
+            public string success { get; set; }
+            public List<string> ErrorMessage { get; set; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             lbl_header.Font.Bold = true;
             lbl_header.Font.Size = FontUnit.Large;
+        }
+        public bool ValidateCaptcha()
+        {
+            bool result = true;
+
+            string captchaResponse = Request.Form["g-recaptcha-response"];
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create
+                ("  " + captchaResponse);
+
+            try
+            {
+                using (WebResponse wResponse = req.GetResponse())
+                {
+                    using (StreamReader readStream = new StreamReader(wResponse.GetResponseStream()))
+                    {
+                        string jsonResponse = readStream.ReadToEnd();
+
+                        JavaScriptSerializer js = new JavaScriptSerializer();
+
+                        MyObjectLogin jsonObject = js.Deserialize<MyObjectLogin>(jsonResponse);
+                        result = Convert.ToBoolean(jsonObject.success);
+                    }
+                }
+                return result;
+            }
+            catch (WebException ex)
+            {
+                result = false;
+            }
+            return result;
         }
         protected void register(object sender, EventArgs e)
         {
@@ -41,7 +80,7 @@ namespace _190298T_IT2163ASSIGNMENT
 
             try
             {
-                if (DBHash != null && DBHash.Length > 0 && DBSalt != null && DBSalt.Length > 0)
+                if (DBHash != null && DBHash.Length > 0 && DBSalt != null && DBSalt.Length > 0 && ValidateCaptcha() == true)
                 {
                     string pwdwithsalt = pwd + DBSalt;
                     byte[] pwdhash = hash.ComputeHash(Encoding.UTF8.GetBytes(pwdwithsalt));

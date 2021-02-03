@@ -107,12 +107,6 @@
             }
         }
 
-        grecaptcha.ready(function () {
-            grecaptcha.execute('6Lc1hhUaAAAAAF-ixVcjtgb8HHQ_PKEG1Lhwo6Oi', { action: 'Login' }).then(function (token) {
-                document.getElementById("g-recaptcha-response").value = token;
-            });
-        });
-
     </script>
     <div style="text-align:center;">
             <asp:Label ID="lbl_header" runat="server" Text="SITConnect Account Recovery"></asp:Label>

@@ -10,9 +10,18 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Net;
+using System.IO;
+using System.Web.Script.Serialization;
 
 namespace _190298T_IT2163ASSIGNMENT
 {
+    public class MyObjectRegistration
+    {
+        public string success { get; set; }
+        public List<string> ErrorMessage { get; set; }
+    }
+
     public partial class _190298T_RegistrationForm : System.Web.UI.Page
     {
         string IT2163DB = System.Configuration.ConfigurationManager.ConnectionStrings["IT2163DB"].ConnectionString;
@@ -29,9 +38,46 @@ namespace _190298T_IT2163ASSIGNMENT
             lbl_header.Font.Size = FontUnit.Large;
         }
 
+        public bool ValidateCaptcha()
+        {
+            bool result = true;
+
+            string captchaResponse = Request.Form["g-recaptcha-response"];
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create
+                (" " + captchaResponse);
+
+            try
+            {
+                using (WebResponse wResponse = req.GetResponse())
+                {
+                    using (StreamReader readStream = new StreamReader(wResponse.GetResponseStream()))
+                    {
+                        string jsonResponse = readStream.ReadToEnd();
+
+                        JavaScriptSerializer js = new JavaScriptSerializer();
+
+                        MyObjectRegistration jsonObject = js.Deserialize<MyObjectRegistration>(jsonResponse);
+                        result = Convert.ToBoolean(jsonObject.success);
+                    }
+                }
+                return result;
+            }
+            catch (WebException ex)
+            {
+                result = false;
+            }
+            return result;
+        }
+
         protected void btn_submit_Click(object sender, EventArgs e)
         {
             int error = 0;
+
+            bool verify = ValidateCaptcha();
+            if (verify == false)
+            {
+                error += 1;
+            }
 
             lbl_fnamefeedback.Text = "";
             if (Regex.IsMatch(tb_firstname.Text, "[a-zA-z]"))
@@ -418,11 +464,12 @@ namespace _190298T_IT2163ASSIGNMENT
                 {
                     using (SqlConnection con = new SqlConnection(IT2163DB))
                     {
-                        using (SqlCommand cmd = new SqlCommand("INSERT INTO SITConnect VALUES(@Email_Address, @First_Name, @Last_Name, @CC, @CCKey, @CCIV, @CVV, @CVVKey, @CVVIV, @Expiry, @Password_Salt, @Password_Hash, @Date_Of_Birth, @Lockout, @Min_Pwd, @Max_Pwd, @Pwd2_Salt, @Pwd2_Hash)"))
+                        using (SqlCommand cmd = new SqlCommand("INSERT INTO SITConnect VALUES(@SITID, @Email_Address, @First_Name, @Last_Name, @CC, @CCKey, @CCIV, @CVV, @CVVKey, @CVVIV, @Expiry, @Password_Salt, @Password_Hash, @Date_Of_Birth, @Lockout, @Min_Pwd, @Max_Pwd, @Pwd2_Salt, @Pwd2_Hash)"))
                         {
                             using (SqlDataAdapter sda = new SqlDataAdapter())
                             {
                                 cmd.CommandType = CommandType.Text;
+                                cmd.Parameters.AddWithValue("@SITID", Guid.NewGuid().ToString());
                                 cmd.Parameters.AddWithValue("@Email_Address", tb_email.Text.Trim());
                                 cmd.Parameters.AddWithValue("@First_Name", tb_firstname.Text.Trim());
                                 cmd.Parameters.AddWithValue("@Last_Name", tb_lastname.Text.Trim());

@@ -5,14 +5,22 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Script.Serialization;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace _190298T_IT2163ASSIGNMENT
 {
+    public class MyObjectRecovery
+    {
+        public string success { get; set; }
+        public List<string> ErrorMessage { get; set; }
+    }
+
     public partial class _190298T_Recovery : System.Web.UI.Page
     {
         string IT2163DB = System.Configuration.ConfigurationManager.ConnectionStrings["IT2163DB"].ConnectionString;
@@ -31,9 +39,47 @@ namespace _190298T_IT2163ASSIGNMENT
             }
         }
 
+        public bool ValidateCaptcha()
+        {
+            bool result = true;
+
+            string captchaResponse = Request.Form["g-recaptcha-response"];
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create
+                ("  " + captchaResponse);
+
+            try
+            {
+                using (WebResponse wResponse = req.GetResponse())
+                {
+                    using (StreamReader readStream = new StreamReader(wResponse.GetResponseStream()))
+                    {
+                        string jsonResponse = readStream.ReadToEnd();
+
+                        JavaScriptSerializer js = new JavaScriptSerializer();
+
+                        MyObjectRecovery jsonObject = js.Deserialize<MyObjectRecovery>(jsonResponse);
+                        result = Convert.ToBoolean(jsonObject.success);
+                    }
+                }
+                return result;
+            }
+            catch (WebException ex)
+            {
+                result = false;
+            }
+            return result;
+        }
+
+
         protected void verifyunlock_Click(object sender, EventArgs e)
         {
             int error = 0;
+
+            bool verify = ValidateCaptcha();
+            if (verify == false)
+            {
+                error += 1;
+            }
 
             lbl_lnamefeedback.Text = "";
             if (Regex.IsMatch(tb_lastname.Text, "[a-zA-z]"))

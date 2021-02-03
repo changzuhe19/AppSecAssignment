@@ -1,6 +1,16 @@
-﻿<%@ Page Title="Home Page" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="_190298T_IT2163ASSIGNMENT._Default" %>
+﻿<%@ Page Title="Home Page" Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="_190298T_IT2163ASSIGNMENT._Default"  ValidateRequest="false"%>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">
+    <style>
+
+        #additem_form{
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .first_column {
+            width: 126px;
+        }
+    </style>
 
     <div class="jumbotron">
         <h1>ASP.NET</h1>
@@ -9,34 +19,53 @@
     </div>
 
     <div class="row">
-        <div class="col-md-4">
-            <h2>Getting started</h2>
-            <p>
-                ASP.NET Web Forms lets you build dynamic websites using a familiar drag-and-drop, event-driven model.
-            A design surface and hundreds of controls and components let you rapidly build sophisticated, powerful UI-driven sites with data access.
-            </p>
-            <p>
-                <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301948">Learn more &raquo;</a>
-            </p>
+        <div class="col-md-6">
+            <div style="text-align:center;">
+            <asp:Label ID="lbl_header" runat="server" Text="SITConnect Request Form"></asp:Label>
+            </div>
+            <br>
+            <table id="additem_form">
+                <tr>
+                    <td colspan="2">
+                        <asp:Panel ID="Panel1" Visible="false" runat="server" CssClass="alert alert-dismissable alert-success">Request Success.</asp:Panel>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <asp:Panel ID="Add_Failure" Visible="false" runat="server" CssClass="alert alert-dismissable alert-danger">Request Failure. Check the fields again.</asp:Panel>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="first_column">
+                        <asp:Label ID="lbl_name" runat="server" Text="Item Name"></asp:Label>
+                    </td>
+                    <td>
+                        <asp:TextBox ID="tb_name" runat="server"></asp:TextBox>
+                        <br />
+                        <asp:Label ID="lbl_namefeedback" runat="server"></asp:Label>
+                        <br />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="first_column">
+                        <asp:Label ID="lbl_quantity" runat="server" Text="Quantity"></asp:Label>
+                    </td>
+                    <td>
+                        <asp:TextBox ID="tb_quantity" runat="server"></asp:TextBox>
+                        <br />
+                        <asp:Label ID="lbl_quantityfeedback" runat="server"></asp:Label>
+                        <br />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="first_column"  colspan="2" style="text-align:center;">
+                        <asp:Button ID="submit" runat="server" Text="Submit" OnClick="submit_Click" />
+                    </td>
+                </tr>
+            </table>
         </div>
-        <div class="col-md-4">
-            <h2>Get more libraries</h2>
-            <p>
-                NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.
-            </p>
-            <p>
-                <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301949">Learn more &raquo;</a>
-            </p>
-        </div>
-        <div class="col-md-4">
-            <h2>Web Hosting</h2>
-            <p>
-                You can easily find a web hosting company that offers the right mix of features and price for your applications.
-            </p>
-            <p>
-                <a class="btn btn-default" href="https://go.microsoft.com/fwlink/?LinkId=301950">Learn more &raquo;</a>
-            </p>
+        <div class="col-md-6">
+            <asp:Label ID="result" runat="server" Text="Submit the form on the side to see the result here"></asp:Label>
         </div>
     </div>
-
 </asp:Content>
